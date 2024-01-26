@@ -1,0 +1,8 @@
+4 subscriptions
+
+USER DATA
+username
+email
+password
+subscription type
+

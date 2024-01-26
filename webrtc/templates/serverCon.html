@@ -1,0 +1,7 @@
+{% load static %} {% csrf_token %}
+<body>
+  <video id="video" autoplay="true"></video>
+
+  <script src="{% static 'experimental/clientServerConn.js' %}"></script>
+</body>
+<!-- peer to peer webrtc connection via http -->
