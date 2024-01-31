@@ -22,6 +22,8 @@ urlpatterns = [
     path("p2sOffer", MainView.p2sOffer),
     path("s2sOffer", MainView.s2sOffer),
     path("p2sHttp", MainView.p2sHttpIndex),
+
+    path("", MainView.p2sHttpIndex),
     path("getOffer", p2pHttpViews.getOffer),
     path("getAnswer", p2pHttpViews.getAnswer),
     path("p2pHttp", p2pHttpViews.p2pHttpIndex),

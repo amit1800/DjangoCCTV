@@ -1,5 +1,10 @@
-var pc = null;
-function createPeerConnection() {
+
+function start() {
+  var pc = null;
+  let frameRate = 1;
+  try{
+    frameRate = document.getElementById("framerate").value;
+  }catch{}
   var config = {
     sdpSemantics: "unified-plan",
   };
@@ -10,19 +15,33 @@ function createPeerConnection() {
     },
   ];
 
-  pc = new RTCPeerConnection(config);
+   pc = new RTCPeerConnection(config);
   pc.addEventListener("track", function(evt) {
     console.log("recieved stream");
     console.log(pc.connectionState);
-    document.getElementById("video").srcObject = evt.streams[0];
+    try{
+      document.getElementById("video").srcObject = evt.streams[0];
+
+    }catch(e){
+      print(e)
+    }
   });
 
-  return pc;
-}
+  const transciever = pc.addTransceiver("video", { direction: "recvonly" });
+  transciever.direction = "recvonly";
+  const dc = pc.createDataChannel("chat");
+  dc.onclose = function() {
+    console.log("dc closed");
+  };
 
-function negotiate() {
+  dc.onopen = function() {};
+
+  dc.onmessage = function(evt) {
+    console.log(evt.data);
+  };
+  
   console.log("negotiate");
-  return pc
+  pc
     .createOffer()
     .then(function(offer) {
       return pc.setLocalDescription(offer);
@@ -80,56 +99,19 @@ function negotiate() {
     .catch(function(e) {
       alert(e);
     });
-}
-
-let frameRate = 1;
-function start() {
-  frameRate = document.getElementById("framerate").value;
-  pc = createPeerConnection();
-  transciever = pc.addTransceiver("video", { direction: "recvonly" });
-  transciever.direction = "recvonly";
-  dc = pc.createDataChannel("chat");
-  dc.onclose = function() {
-    console.log("dc closed");
-  };
-
-  dc.onopen = function() {};
-
-  dc.onmessage = function(evt) {
-    console.log(evt.data);
-  };
-
-  // navigator.mediaDevices
-  //   .getUserMedia({
-  //     video: { width: 320, height: 240, frameRate: { max: 30 } },
-  //     audio: false,
-  //   })
-  //   .then(
-  //     function(stream) {
-  //       stream.getTracks().forEach(function(track) {
-  //         pc.addTrack(track, stream);
-  //       });
-  //       return negotiate();
-  //     },
-  //     function(err) {
-  //       alert("Could not acquire media: " + err);
-  //     }
-  //   );
-  negotiate();
-}
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) === name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
       }
     }
+    return cookieValue;
   }
-  return cookieValue;
-}
-const csrftoken = getCookie("csrftoken");
+  }

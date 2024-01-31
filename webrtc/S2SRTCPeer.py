@@ -34,21 +34,6 @@ class S2SRTCPeer:
         else:
             return None
 
-    # def object_from_string(self, message_str):
-    #     try:
-    #         message = json.loads(message_str)
-    #         offer = json.loads(message["offer"])
-    #         username = message["username"]
-    #         password = message["password"]
-    #         print("message:", username, password)
-    #         if isAuthenticatedS2S(username, password):
-    #             if offer["type"] in ["answer", "offer"]:
-    #                 return RTCSessionDescription(**offer)
-    #         else:
-    #             return "auth failed"
-    #     except:
-    #         return "error"
-
     def object_to_string(self, obj):
         try:
             if isinstance(obj, RTCSessionDescription):
@@ -78,6 +63,7 @@ class S2SRTCPeer:
             @channel.on("message")
             def on_message(message):
                 # print("<", message)
+                channel.send(message)
                 pass
 
             @channel.on("close")
